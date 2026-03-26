@@ -43,13 +43,13 @@ export const deleteTransaction = async (req: AuthRequest, res: Response) => {
   }
 
   // check if transaction is owned by the user request
-  if (transaction.user !== user?._id) {
+  if (transaction.user.toString() !== user?._id.toString()) {
     res.status(401).json({ error: "Not authorized" });
     return;
   }
 
   await transaction.deleteOne();
-  res.status(404).json({ message: "Deleted" });
+  res.status(204).json({ message: "Deleted" });
 };
 
 export const getSummary = async (req: AuthRequest, res: Response) => {
@@ -68,8 +68,8 @@ export const getSummary = async (req: AuthRequest, res: Response) => {
     },
   ]);
 
-  const income = result.find((r) => r._id === "income").total ?? 0;
-  const expense = result.find((r) => r._id === "expense").total ?? 0;
+  const income = result.find((r) => r._id === "income")?.total ?? 0;
+  const expense = result.find((r) => r._id === "expense")?.total ?? 0;
 
   res.json({
     income,
@@ -82,7 +82,7 @@ export const getByCategory = async (req: AuthRequest, res: Response) => {
   const user = req.user;
   const result = await TransactionModel.aggregate([
     {
-      $match: { user: user?._id },
+      $match: { user: user?._id, type: "expense" },
     },
     {
       $group: {

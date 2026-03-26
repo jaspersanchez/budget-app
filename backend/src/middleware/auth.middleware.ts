@@ -13,8 +13,6 @@ export const protect = async (
 ) => {
   const authHeader = req.headers.authorization;
 
-  console.log(authHeader);
-
   // check if header starts with "Bearer: "
   if (!authHeader?.startsWith("Bearer ")) {
     res.status(401).json({ error: "Not authorized" });
